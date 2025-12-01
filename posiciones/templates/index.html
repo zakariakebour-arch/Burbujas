@@ -1,0 +1,68 @@
+<style>
+    *{
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    div{
+        transition: left 0.05s linear, top 0.05s linear;
+        border: 1px solid black; 
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: radial-gradient(circle at 30% 30%, aqua, white);
+    }
+    .mini_burbuja{
+        position: absolute;
+        top: 10%;
+        left: 10%;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background-color: rgba(255,255,255,0.8);
+    }
+</style>
+
+<script>
+fetch("http://127.0.0.1:5000/api")
+.then(r => r.json())
+.then(datos => {
+
+    datos.forEach(elemento => {   
+
+        const burbuja = document.createElement("div");
+        burbuja.style.position = "absolute";
+        burbuja.style.left = elemento.x + "px";
+        burbuja.style.top = elemento.y + "px";
+        burbuja.innerHTML = `<p>${elemento.nombre}</p>`;
+        document.body.appendChild(burbuja);
+
+        const mini_circulo = document.createElement("div");
+        mini_circulo.classList.add("mini_burbuja");
+        burbuja.appendChild(mini_circulo);
+
+        let posX = elemento.x;
+        let posY = elemento.y;
+
+        // Reducir velocidad para movimientos suaves
+        let velX = elemento.moverX / 20;
+        let velY = elemento.moverY / 20;
+
+        setInterval(() => {
+            posX += velX;
+            posY += velY;
+
+            if(posX <= 0 || posX + 100 >= window.innerWidth) velX *= -1;
+            if(posY <= 0 || posY + 100 >= window.innerHeight) velY *= -1;
+
+            burbuja.style.left = posX + "px";
+            burbuja.style.top = posY + "px";
+        }, 20); // actualizar cada 20ms para suavidad
+    });
+
+})
+.catch(err => console.log("Error:", err));
+</script>
